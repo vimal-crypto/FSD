@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <title>Chatbot - Web Crawler</title>
+    <style>
+        /* Chatbot Container */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: #f8f9fa;
+        }
+
+        .chat-bubble {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+
+        .chat-bubble.user {
+            background-color: #f1f1f1;
+            color: #333;
+            align-self: flex-end;
+        }
+
+        /* Chatbot Input */
+        .chat-input {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .chat-input input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-right: 10px;
+        }
+
+        /* Button styling */
+        .chat-input button {
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .feature-buttons {
+            margin-top: 20px;
+        }
+
+        .feature-buttons .btn {
+            margin-right: 10px;
+        }
+
+        /* Scrollable chat container */
+        .chat-log {
+            max-height: 400px;
+            overflow-y: scroll;
+            padding-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <h2>Web Scraping Chatbot</h2>
+
+        <!-- Display existing conversation logs -->
+        <div class="chat-log">
+            <!-- If answer is available, show the bot's answer -->
+            {% if answer %}
+                <div class="chat-bubble">
+                    <strong>Bot:</strong> {{ answer }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Feature Buttons -->
+        <div class="feature-buttons">
+            <form method="POST" action="/">
+                {% csrf_token %}
+                <input type="hidden" name="url" value="{{ url }}">
+                <button type="submit" name="action" value="scrape" class="btn btn-primary">Web Scraping</button>
+                <button type="submit" name="action" value="wordcount" class="btn btn-secondary">Word Count</button>
+                <button type="submit" name="action" value="ask" class="btn btn-success">Ask a Question</button>
+            </form>
+        </div>
+
+        <!-- Question Input Section -->
+        <form method="POST" class="chat-input" action="/">
+            {% csrf_token %}
+            <input type="hidden" name="url" value="{{ url }}">
+            <input type="text" name="question" class="form-control" placeholder="Ask me a question..." required>
+            <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+
+</body>
+</html>

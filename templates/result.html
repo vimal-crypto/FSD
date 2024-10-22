@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <title>Result</title>
+    <style>
+        /* Background Animation */
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2, #89fffd);
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Keyframes for the background gradient animation */
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1.display-4 {
+            font-family: 'Roboto', sans-serif;
+            font-size: 2rem; /* Adjust this as needed */
+
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        hr.my-4 {
+            border: 0;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(102, 238, 247, 1) 0%, rgba(142, 45, 226, 1) 100%);
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+
+        /* Button styling */
+        button {
+            transition: all 0.3s ease;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            background: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+            color: #fff;
+            box-shadow: 0px 5px 15px rgba(0, 114, 255, 0.3);
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #0072ff 0%, #00c6ff 100%);
+            color: #fff;
+            box-shadow: 0px 5px 25px rgba(0, 114, 255, 0.5);
+        }
+
+        /* Styling for scraped data and source code sections */
+        #scraped-data-section,
+        #html-source-section {
+            display: none;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        pre {
+            background-color: #eaeaea;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        /* Word count table styling */
+        #wordcount-section {
+            display: none;
+        }
+
+        #wordcount-section table {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        #wordcount-section table th,
+        #wordcount-section table td {
+            padding: 15px;
+            text-align: center;
+        }
+
+        #wordcount-section table th {
+            background: #667eea;
+            color: white;
+            font-size: 1rem;
+        }
+
+        #wordcount-section table td {
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* Chatbox styling */
+        .chatbox {
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-message {
+            text-align: right;
+            color: #0072ff;
+            font-weight: bold;
+        }
+
+        .bot-message {
+            text-align: left;
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        form .form-group label {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        form input[type="text"] {
+            border-radius: 30px;
+            padding: 15px;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form button {
+            border-radius: 30px;
+            padding: 12px 25px;
+            background-color: #28a745;
+            color: white;
+            font-size: 1.1rem;
+            border: none;
+        }
+
+        form button:hover {
+            background-color: #218838;
+            box-shadow: 0px 5px 10px rgba(33, 136, 56, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1 class="display-4">Results for {{ url }}</h1>
+        <hr class="my-4">
+
+        <!-- Button to scrape the website -->
+        <form method="POST" id="scrape-form">
+            {% csrf_token %}
+            <input type="hidden" name="url" value="{{ url }}">
+            <button type="submit" class="btn btn-primary btn-block">Perform Web Scraping</button>
+        </form>
+
+        <!-- Button to generate word count -->
+        <form method="POST" id="wordcount-form">
+            {% csrf_token %}
+            <input type="hidden" name="url" value="{{ url }}">
+            <button type="submit" class="btn btn-primary btn-block mt-3">Generate Word Count</button>
+        </form>
+
+        <!-- Scraped Data Preview Section -->
+        <div id="scraped-data-section" class="mt-5">
+            <h2>Scraped Data Preview</h2>
+            <div id="scraped-data"></div>
+        </div>
+
+        <!-- HTML Source Code Display Section -->
+        <div id="html-source-section" class="mt-5">
+            <h2>HTML Source Code</h2>
+            <pre id="html-source"></pre>
+        </div>
+
+        <!-- Word count section (shown after button is clicked) -->
+        <div id="wordcount-section" class="mt-5">
+            <h2>Word Count</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Word</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody id="wordcount-body"></tbody>
+            </table>
+        </div>
+
+        <!-- Chatbox interface -->
+        <div class="chat-container mt-5">
+            <div class="chatbox">
+                {% for message in chat_history %}
+                <div>
+                    <p class="user-message">{{ message.user }}</p>
+                    <p class="bot-message">{{ message.bot }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            <form method="POST" action="/ask-question/">
+                {% csrf_token %}
+                <input type="hidden" name="url" value="{{ url }}">
+                <div class="form-group">
+                    <label for="question">Ask a question about the content:</label>
+                    <input type="text" name="question" class="form-control" placeholder="Enter your question" required>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">Ask</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script to handle web scraping and word count generation -->
+    <script>
+        // Handle web scraping
+        document.querySelector('#scrape-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            let formData = new FormData(event.target); // Get form data
+
+            fetch('/perform-webscraping/', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Check if the response has data
+                    if (data.scraped_data) {
+                        document.getElementById('scraped-data').innerText = data.scraped_data;
+                        document.getElementById('html-source').innerText = data.html_source; // Display HTML source code
+                        document.getElementById('html-source-section').style.display = 'block'; // Show HTML section
+                        document.getElementById('scraped-data-section').style.display = 'block'; // Show scraped data section
+                    } else {
+                        alert('No scraped data returned!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error in web scraping:', error); // Handle any errors
+                    alert('Error occurred during web scraping.');
+                });
+        });
+
+        // Handle word count generation
+        document.querySelector('#wordcount-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            let formData = new FormData(event.target); // Get form data
+
+            fetch('/generate-wordcount/', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let tableBody = document.getElementById('wordcount-body');
+                    tableBody.innerHTML = ''; // Clear existing content
+
+                    if (data.words && data.words.length > 0) {
+                        // Loop through each word count and insert it into the table
+                        data.words.forEach(wordCount => {
+                            let row = `<tr><td>${wordCount[0]}</td><td>${wordCount[1]}</td></tr>`;
+                            tableBody.insertAdjacentHTML('beforeend', row);
+                        });
+                        document.getElementById('wordcount-section').style.display = 'block'; // Show word count section
+                    } else {
+                        // Display message if no words are found
+                        let row = `<tr><td colspan="2">No words found</td></tr>`;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error generating word count:', error); // Handle any errors
+                    alert('Error occurred while generating word count.');
+                });
+        });
+    </script>
+</body>
+
+</html>
